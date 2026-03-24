@@ -22,11 +22,26 @@ else:
 if prefix == "NONE":
     prefix = ""
 
-MONGO_URI = os.getenv("MONGO_URI") or os.getenv("CONNECTION_URI")
-if not MONGO_URI:
-    print("No CONNECTION_URI config var found. "
-          "Please enter your MongoDB connection URI in the configuration or .env file.")
-    exit(1)
+# Parse multiple database mapping or fallback to single database
+DATABASE_MAPPING_STR = os.getenv("DATABASE_MAPPING", "")
+DATABASE_MAPPING = {}
+
+if DATABASE_MAPPING_STR.strip():
+    # Parse DATABASE_MAPPING format: path1=uri1,path2=uri2,path3=uri3
+    for mapping in DATABASE_MAPPING_STR.split(","):
+        if "=" in mapping:
+            path, uri = mapping.split("=", 1)
+            DATABASE_MAPPING[path.strip()] = uri.strip()
+
+# If no mapping provided, use legacy single database setup
+if not DATABASE_MAPPING:
+    MONGO_URI = os.getenv("MONGO_URI") or os.getenv("CONNECTION_URI")
+    if not MONGO_URI:
+        print("No CONNECTION_URI or DATABASE_MAPPING config var found. "
+              "Please enter your MongoDB connection URI in the configuration or .env file.")
+        exit(1)
+else:
+    MONGO_URI = None  # Will use mapping instead
 
 app = Sanic(__name__)
 app.static("/static", "./static")
@@ -61,9 +76,32 @@ def strtobool(val):
         raise ValueError("invalid truth value %r" % (val,))
 
 
+async def get_db(app, log_path=None):
+    """Get the appropriate database for the given log path.
+    
+    If using DATABASE_MAPPING mode, route to the specific database.
+    If using legacy mode, always return the default database.
+    """
+    if DATABASE_MAPPING and log_path in DATABASE_MAPPING:
+        # Return the client for this specific database mapping
+        uri = DATABASE_MAPPING[log_path]
+        return AsyncIOMotorClient(uri).modmail_bot
+    elif not DATABASE_MAPPING and MONGO_URI:
+        # Legacy single database mode
+        return app.ctx.db
+    else:
+        raise NotFound
+
+
 @app.listener("before_server_start")
 async def init(app, loop):
-    app.ctx.db = AsyncIOMotorClient(MONGO_URI).modmail_bot
+    # In legacy mode, create a single connection
+    if not DATABASE_MAPPING and MONGO_URI:
+        app.ctx.db = AsyncIOMotorClient(MONGO_URI).modmail_bot
+    else:
+        # In mapping mode, don't pre-create connections (they'll be created per-request)
+        app.ctx.db = None
+    
     use_attachment_proxy = strtobool(os.getenv("USE_ATTACHMENT_PROXY", "no"))
     if use_attachment_proxy:
         app.ctx.attachment_proxy_url = os.getenv("ATTACHMENT_PROXY_URL", "https://cdn.discordapp.xyz")
@@ -83,27 +121,53 @@ async def index(request):
 
 @app.get(prefix + "/raw/<key>")
 async def get_raw_logs_file(request, key):
-    """Returns the plain text rendered log entry"""
-    document = await app.ctx.db.logs.find_one({"key": key})
+    """Returns the plain text rendered log entry (legacy single database mode)"""
+    db = await get_db(app)
+    document = await db.logs.find_one({"key": key})
 
     if document is None:
         raise NotFound
 
     log_entry = LogEntry(app, document)
+    return log_entry.render_plain_text()
 
+
+@app.get(prefix + "/raw/<log_path>/<key>")
+async def get_raw_logs_file_mapped(request, log_path, key):
+    """Returns the plain text rendered log entry (multi-database mode)"""
+    db = await get_db(app, log_path=log_path)
+    document = await db.logs.find_one({"key": key})
+
+    if document is None:
+        raise NotFound
+
+    log_entry = LogEntry(app, document)
     return log_entry.render_plain_text()
 
 
 @app.get(prefix + "/<key>")
 async def get_logs_file(request, key):
-    """Returns the html rendered log entry"""
-    document = await app.ctx.db.logs.find_one({"key": key})
+    """Returns the html rendered log entry (legacy single database mode)"""
+    db = await get_db(app)
+    document = await db.logs.find_one({"key": key})
 
     if document is None:
         raise NotFound
 
     log_entry = LogEntry(app, document)
+    return log_entry.render_html()
 
+
+@app.get(prefix + "/<log_path>/<key>")
+async def get_logs_file_mapped(request, log_path, key):
+    """Returns the html rendered log entry (multi-database mode)"""
+    db = await get_db(app, log_path=log_path)
+    document = await db.logs.find_one({"key": key})
+
+    if document is None:
+        raise NotFound
+
+    log_entry = LogEntry(app, document)
     return log_entry.render_html()
 
 
