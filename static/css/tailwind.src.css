@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Scoped reset for Tailwind markup. :where() keeps specificity at zero so utilities always win. */
+@layer base {
+  :where(.tw, .tw *, .tw ::before, .tw ::after) {
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: rgb(255 255 255 / 0.08);
+  }
+
+  :where(body.tw) {
+    margin: 0;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  :where(.tw) :where(h1, h2, h3, p, figure) {
+    margin: 0;
+    font-size: inherit;
+    font-weight: inherit;
+  }
+
+  :where(.tw) :where(a) {
+    color: inherit;
+    text-decoration: inherit;
+  }
+
+  :where(.tw) :where(img, svg) {
+    display: block;
+    max-width: 100%;
+  }
+
+  :where(.tw) :where(button, input, select) {
+    margin: 0;
+    font: inherit;
+    color: inherit;
+  }
+
+  :where(.tw) :where(table) {
+    border-collapse: collapse;
+    text-indent: 0;
+  }
+
+  :where(.tw) :where(th) {
+    font-weight: inherit;
+    text-align: inherit;
+  }
+
+  :where(.tw) :where(input::placeholder) {
+    color: theme("colors.zinc.500");
+    opacity: 1;
+  }
+}

@@ -113,3 +113,10 @@ README.md
 Pipfile
 Pipfile.lock
 logviewer.sh
+
+# Tailwind build tooling
+node_modules/
+package.json
+package-lock.json
+tailwind.config.js
+static/css/tailwind.src.css

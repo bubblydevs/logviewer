@@ -1,100 +1,182 @@
 {% extends "base.html" %}
+{% import '_icons.html' as icons %}
+{% block title %}Tickets · {% if java_branding %}Java Transcripts{% else %}Logviewer{% endif %}{% endblock %}
 {% block content %}
 
-<main class="container dash">
+{% macro segment(href, active, label, icon=None) -%}
+<a href="{{ href }}"
+   class="inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium transition {% if active %}bg-surface-700 text-white shadow-sm shadow-black/30{% else %}text-zinc-400 hover:text-zinc-100{% endif %}">
+    {% if icon %}{{ icons.icon(icon) }}{% endif %}{{ label }}
+</a>
+{%- endmacro %}
 
-    <div class="dash__header">
-        {% if java_branding %}
-        <img src="{{ java_logo_url | e }}" alt="Java" class="dash__logo">
-        {% endif %}
-        <div>
-            <h4 class="dash__title">Tickets</h4>
-            <div class="dash__subtitle">Logged in as {{ (user.global_name or user.username) | e }}</div>
-        </div>
-    </div>
+<main class="relative flex-1">
+    <div class="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_at_top,rgba(88,101,242,0.12),transparent_65%)]"></div>
 
-    <div class="dash__tabs">
-        <a href="{{ link(tab='recent') }}" class="dash__tab {% if filters.tab == 'recent' %}dash__tab--active{% endif %}">
-            <i class="material-icons">schedule</i> Recent tickets
-        </a>
-        <a href="{{ link(tab='mine') }}" class="dash__tab {% if filters.tab == 'mine' %}dash__tab--active{% endif %}">
-            <i class="material-icons">person</i> Done by you
-        </a>
-    </div>
+    <div class="relative mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
 
-    <div class="dash__toolbar">
-        <form method="get" action="/" class="dash__search">
-            <i class="material-icons">search</i>
-            <input type="search" name="q" value="{{ filters.q | e }}" placeholder="Search by user, user ID, closer or log key" autocomplete="off">
-            {% if filters.tab != 'recent' %}<input type="hidden" name="tab" value="{{ filters.tab | e }}">{% endif %}
-            {% if filters.status != 'all' %}<input type="hidden" name="status" value="{{ filters.status | e }}">{% endif %}
-            {% if filters.server %}<input type="hidden" name="server" value="{{ filters.server | e }}">{% endif %}
-        </form>
-
-        <div class="dash__chips">
-            {% for value, label in [('all', 'All'), ('open', 'Open'), ('closed', 'Closed')] %}
-            <a href="{{ link(status=value) }}" class="dash__chip {% if filters.status == value %}dash__chip--active{% endif %}">{{ label }}</a>
-            {% endfor %}
+        <div class="flex flex-col gap-1.5">
+            <h1 class="text-2xl font-semibold tracking-tight text-white sm:text-3xl">Tickets</h1>
+            <p class="text-sm text-zinc-400">
+                Welcome back, <span class="font-medium text-zinc-200">{{ (user.global_name or user.username) | e }}</span>. Select a ticket to open its transcript.
+            </p>
         </div>
 
-        {% if server_paths %}
-        <div class="dash__chips">
-            <a href="{{ link(server=None) }}" class="dash__chip {% if not filters.server %}dash__chip--active{% endif %}">All servers</a>
-            {% for path in server_paths %}
-            <a href="{{ link(server=path) }}" class="dash__chip {% if filters.server == path %}dash__chip--active{% endif %}">{{ path | e }}</a>
-            {% endfor %}
-        </div>
-        {% endif %}
-    </div>
+        <div class="mt-8 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div class="inline-flex self-start rounded-xl border border-white/5 bg-surface-900 p-1">
+                {{ segment(link(tab='recent'), filters.tab == 'recent', 'Recent tickets', 'clock') }}
+                {{ segment(link(tab='mine'), filters.tab == 'mine', 'Done by you', 'user') }}
+            </div>
 
-    {% if tickets %}
-    <div class="dash__list">
-        {% for ticket in tickets %}
-        <a href="{{ ticket.url | e }}" class="ticket">
-            <img class="ticket__avatar circle"
-                 src="{{ ticket.recipient_avatar | e }}"
-                 onerror="this.onerror=null;this.src='{{ ticket.recipient_default_avatar | e }}'"
-                 alt="">
-            <div class="ticket__main">
-                <div class="ticket__name">
-                    {{ ticket.recipient_name | e }}
-                    {% if ticket.title %}<span class="ticket__title">{{ ticket.title | e }}</span>{% endif %}
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <form method="get" action="/" class="relative sm:w-72">
+                    <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-zinc-500">{{ icons.icon('search') }}</span>
+                    <input type="search" name="q" value="{{ filters.q | e }}" placeholder="Search user, ID or closer" autocomplete="off"
+                           class="w-full rounded-xl border border-white/5 bg-surface-900 py-2.5 pl-10 pr-3 text-sm text-zinc-100 outline-none transition focus:border-brand/60 focus:ring-4 focus:ring-brand/15">
+                    {% if filters.tab != 'recent' %}<input type="hidden" name="tab" value="{{ filters.tab | e }}">{% endif %}
+                    {% if filters.status != 'all' %}<input type="hidden" name="status" value="{{ filters.status | e }}">{% endif %}
+                    {% if filters.server %}<input type="hidden" name="server" value="{{ filters.server | e }}">{% endif %}
+                </form>
+
+                <div class="inline-flex self-start rounded-xl border border-white/5 bg-surface-900 p-1">
+                    {% for value, label in [('all', 'All'), ('open', 'Open'), ('closed', 'Closed')] %}
+                    {{ segment(link(status=value), filters.status == value, label) }}
+                    {% endfor %}
                 </div>
-                <div class="ticket__meta">
-                    {% if ticket.created %}<span title="{{ ticket.created.exact }}">Opened {{ ticket.created.human }}</span>{% endif %}
-                    {% if ticket.closer_name %}<span>&middot; Closed by {{ ticket.closer_name | e }}</span>{% endif %}
-                    <span>&middot; {{ ticket.message_count }} message{% if ticket.message_count != 1 %}s{% endif %}</span>
+
+                {% if server_paths %}
+                <div class="relative">
+                    <select onchange="location.href = this.value" aria-label="Server"
+                            class="w-full cursor-pointer appearance-none rounded-xl border border-white/5 bg-surface-900 py-2.5 pl-3.5 pr-9 text-sm font-medium text-zinc-200 outline-none transition focus:border-brand/60 focus:ring-4 focus:ring-brand/15 sm:w-auto">
+                        <option value="{{ link(server=None) }}" {% if not filters.server %}selected{% endif %}>All servers</option>
+                        {% for path in server_paths %}
+                        <option value="{{ link(server=path) }}" {% if filters.server == path %}selected{% endif %}>{{ path | e }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-zinc-500">{{ icons.icon('chevron-down') }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mt-4 overflow-hidden rounded-2xl border border-white/5 bg-surface-900/70 shadow-xl shadow-black/20 backdrop-blur">
+            {% if tickets %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead>
+                        <tr class="border-b border-white/5 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
+                            <th class="px-5 py-3.5">User</th>
+                            <th class="px-5 py-3.5">Status</th>
+                            {% if server_paths %}<th class="hidden px-5 py-3.5 md:table-cell">Server</th>{% endif %}
+                            <th class="hidden px-5 py-3.5 sm:table-cell">Opened</th>
+                            <th class="hidden px-5 py-3.5 lg:table-cell">Closed by</th>
+                            <th class="hidden px-5 py-3.5 text-right md:table-cell">Messages</th>
+                            <th class="w-12"><span class="sr-only">Open</span></th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/[0.04]">
+                        {% for ticket in tickets %}
+                        <tr class="group cursor-pointer transition-colors hover:bg-white/[0.025]" data-href="{{ ticket.url | e }}">
+                            <td class="w-full px-5 py-3.5 sm:w-auto">
+                                <div class="flex items-center gap-3">
+                                    <img src="{{ ticket.recipient_avatar | e }}"
+                                         onerror="this.onerror=null;this.src='{{ ticket.recipient_default_avatar | e }}'"
+                                         alt="" loading="lazy" class="h-9 w-9 shrink-0 rounded-full bg-surface-700 ring-1 ring-white/5">
+                                    <div class="min-w-0">
+                                        <a href="{{ ticket.url | e }}" class="block max-w-[11rem] truncate font-medium text-zinc-100 sm:max-w-xs transition group-hover:text-white">{{ ticket.recipient_name | e }}</a>
+                                        <div class="max-w-[11rem] truncate font-mono text-xs text-zinc-500 sm:max-w-xs">{{ (ticket.title or ticket.recipient_id or ticket.key) | e }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="whitespace-nowrap px-5 py-3.5">
+                                {% if ticket.open %}
+                                <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-400 ring-1 ring-inset ring-emerald-500/20">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>Open
+                                </span>
+                                {% else %}
+                                <span class="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-2.5 py-1 text-xs font-medium text-zinc-400 ring-1 ring-inset ring-white/10">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-zinc-500"></span>Closed
+                                </span>
+                                {% endif %}
+                            </td>
+                            {% if server_paths %}
+                            <td class="hidden whitespace-nowrap px-5 py-3.5 md:table-cell">
+                                <span class="rounded-md bg-brand/10 px-2 py-1 text-xs font-medium uppercase tracking-wide text-indigo-300 ring-1 ring-inset ring-brand/20">{{ ticket.path | e }}</span>
+                            </td>
+                            {% endif %}
+                            <td class="hidden whitespace-nowrap px-5 py-3.5 text-zinc-400 sm:table-cell">
+                                {% if ticket.created %}<span title="{{ ticket.created.exact }}">{{ ticket.created.human }}</span>{% else %}—{% endif %}
+                            </td>
+                            <td class="hidden whitespace-nowrap px-5 py-3.5 lg:table-cell">
+                                {% if ticket.closer_is_you %}
+                                <span class="rounded-md bg-brand/10 px-2 py-1 text-xs font-medium text-indigo-300 ring-1 ring-inset ring-brand/20">You</span>
+                                {% elif ticket.closer_name %}
+                                <span class="text-zinc-300">{{ ticket.closer_name | e }}</span>
+                                {% else %}
+                                <span class="text-zinc-600">—</span>
+                                {% endif %}
+                            </td>
+                            <td class="hidden whitespace-nowrap px-5 py-3.5 text-right tabular-nums text-zinc-400 md:table-cell">{{ ticket.message_count }}</td>
+                            <td class="pr-4 text-zinc-600 transition group-hover:translate-x-0.5 group-hover:text-zinc-300">
+                                {{ icons.icon('chevron-right') }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex items-center justify-between gap-4 border-t border-white/5 px-5 py-3">
+                <span class="text-xs text-zinc-500">Page {{ filters.page }}</span>
+                <div class="flex gap-2">
+                    {% if filters.page > 1 %}
+                    <a href="{{ link(page=filters.page - 1) }}" class="inline-flex items-center gap-1 rounded-lg border border-white/10 px-3 py-1.5 text-xs font-medium text-zinc-200 transition hover:bg-white/5">{{ icons.icon('chevron-left', 'h-3.5 w-3.5') }} Newer</a>
+                    {% else %}
+                    <span class="inline-flex cursor-not-allowed items-center gap-1 rounded-lg border border-white/5 px-3 py-1.5 text-xs font-medium text-zinc-600">{{ icons.icon('chevron-left', 'h-3.5 w-3.5') }} Newer</span>
+                    {% endif %}
+                    {% if has_next and filters.page < 40 %}
+                    <a href="{{ link(page=filters.page + 1) }}" class="inline-flex items-center gap-1 rounded-lg border border-white/10 px-3 py-1.5 text-xs font-medium text-zinc-200 transition hover:bg-white/5">Older {{ icons.icon('chevron-right', 'h-3.5 w-3.5') }}</a>
+                    {% else %}
+                    <span class="inline-flex cursor-not-allowed items-center gap-1 rounded-lg border border-white/5 px-3 py-1.5 text-xs font-medium text-zinc-600">Older {{ icons.icon('chevron-right', 'h-3.5 w-3.5') }}</span>
+                    {% endif %}
                 </div>
             </div>
-            <div class="ticket__side">
-                {% if ticket.path %}<span class="ticket__badge">{{ ticket.path | e }}</span>{% endif %}
-                <span class="ticket__status {% if ticket.open %}ticket__status--open{% endif %}">{% if ticket.open %}Open{% else %}Closed{% endif %}</span>
-                <i class="material-icons ticket__arrow">chevron_right</i>
+            {% else %}
+            <div class="flex flex-col items-center px-6 py-20 text-center">
+                <span class="grid h-12 w-12 place-items-center rounded-xl bg-white/5 text-zinc-400 ring-1 ring-inset ring-white/10">{{ icons.icon('inbox', 'h-6 w-6') }}</span>
+                {% if filters.tab == 'mine' and not filters.q and filters.status == 'all' %}
+                <h2 class="mt-5 text-base font-semibold text-white">Nothing here yet</h2>
+                <p class="mt-1 text-sm text-zinc-400">Tickets you reply to or close will show up here.</p>
+                {% else %}
+                <h2 class="mt-5 text-base font-semibold text-white">No tickets found</h2>
+                <p class="mt-1 text-sm text-zinc-400">Try a different search or filter.</p>
+                {% if filters.q or filters.status != 'all' or filters.server %}
+                <a href="{{ link(q='', status='all', server=None) }}" class="mt-5 rounded-lg border border-white/10 px-3 py-1.5 text-xs font-medium text-zinc-200 transition hover:bg-white/5">Clear filters</a>
+                {% endif %}
+                {% endif %}
             </div>
-        </a>
-        {% endfor %}
+            {% endif %}
+        </div>
     </div>
-
-    <div class="dash__pager">
-        {% if filters.page > 1 %}
-        <a href="{{ link(page=filters.page - 1) }}" class="btn waves-effect">Newer</a>
-        {% endif %}
-        <span class="dash__page">Page {{ filters.page }}</span>
-        {% if has_next and filters.page < 40 %}
-        <a href="{{ link(page=filters.page + 1) }}" class="btn waves-effect">Older</a>
-        {% endif %}
-    </div>
-    {% else %}
-    <div class="dash__empty">
-        <i class="material-icons">inbox</i>
-        {% if filters.tab == 'mine' and not filters.q and filters.status == 'all' %}
-        <p>You haven't replied to or closed any tickets yet.</p>
-        {% else %}
-        <p>No tickets match these filters.</p>
-        {% endif %}
-    </div>
-    {% endif %}
-
 </main>
 
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Whole row opens the transcript; ctrl/cmd/middle click opens it in a new tab.
+    document.querySelectorAll("tr[data-href]").forEach(function (row) {
+        function open(newTab) {
+            if (newTab) window.open(row.dataset.href, "_blank");
+            else window.location.href = row.dataset.href;
+        }
+        row.addEventListener("click", function (e) {
+            if (e.target.closest("a")) return;
+            open(e.ctrlKey || e.metaKey);
+        });
+        row.addEventListener("auxclick", function (e) {
+            if (e.button === 1 && !e.target.closest("a")) open(true);
+        });
+    });
+</script>
 {% endblock %}

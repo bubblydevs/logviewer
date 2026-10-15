@@ -30,9 +30,11 @@ def build_match(tab, status, query, user_id):
 
     if tab == "mine":
         ids = {"$in": _id_values(user_id)}
+        # Any ticket the staff member closed, opened (contact command) or sent a message in.
         conditions.append({"$or": [
             {"closer.id": ids},
-            {"messages": {"$elemMatch": {"author.id": ids, "author.mod": True}}},
+            {"creator.id": ids},
+            {"messages.author.id": ids},
         ]})
 
     if status == "open":
@@ -96,7 +98,7 @@ def _ago(value):
     }
 
 
-def _to_ticket(doc, path, log_prefix):
+def _to_ticket(doc, path, log_prefix, user_id):
     recipient = doc.get("recipient") or {}
     closer = doc.get("closer") or {}
     return {
@@ -110,6 +112,7 @@ def _to_ticket(doc, path, log_prefix):
         "recipient_avatar": recipient.get("avatar_url") or _default_avatar(recipient),
         "recipient_default_avatar": _default_avatar(recipient),
         "closer_name": closer.get("name") if not doc.get("open") else None,
+        "closer_is_you": not doc.get("open") and str(closer.get("id")) == str(user_id),
         "message_count": doc.get("message_count", 0),
         "created": _ago(doc.get("created_at")),
         "closed": _ago(doc.get("closed_at")) if not doc.get("open") else None,
@@ -135,7 +138,7 @@ async def list_tickets(sources, log_prefix, user_id, tab, status, query, page):
     docs.sort(key=lambda item: item[1].get("created_at") or "", reverse=True)
     window = docs[skip:skip + PAGE_SIZE]
 
-    return [_to_ticket(doc, path, log_prefix) for path, doc in window], len(docs) > skip + PAGE_SIZE
+    return [_to_ticket(doc, path, log_prefix, user_id) for path, doc in window], len(docs) > skip + PAGE_SIZE
 
 
 def parse_args(args, server_paths):

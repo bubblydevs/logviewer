@@ -1,25 +1,29 @@
 {% extends "base.html" %}
+{% import '_icons.html' as icons %}
+{% block title %}Access denied{% endblock %}
 {% block content %}
 
-<main>
+<main class="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-16">
+    <div class="pointer-events-none absolute inset-x-0 top-0 h-[480px] bg-[radial-gradient(ellipse_at_top,rgba(239,68,68,0.10),transparent_65%)]"></div>
 
-<div class="vertical-align-middle center container">
-    <div class="card-panel hoverable" id='main-card'>
-        {% if java_branding %}
-        <img src="{{ java_logo_url | e }}" alt="Java" class="java-card-logo java-card-logo--small">
-        {% endif %}
-        <h1 class="animated jackInTheBox header" id='dashbots'>Access denied</h1>
-        <h5 class="header col s12 light grey-text">{{ message | e }}</h5>
-        <br>
-        <div class="row center">
-            <a href="/login" class="btn waves-effect my-button">Try again</a>
+    <div class="relative w-full max-w-md rounded-2xl border border-white/5 bg-surface-900/80 p-8 text-center shadow-2xl shadow-black/40 backdrop-blur sm:p-10">
+        <span class="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-red-500/10 text-red-400 ring-1 ring-inset ring-red-500/20">
+            {{ icons.icon('shield-alert', 'h-6 w-6') }}
+        </span>
+        <h1 class="mt-6 text-xl font-semibold tracking-tight text-white">Access denied</h1>
+        <p class="mt-2 text-sm leading-relaxed text-zinc-400">{{ message | e }}</p>
+
+        <div class="mt-8 flex flex-col gap-2 sm:flex-row sm:justify-center">
+            <a href="/login" class="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-600">
+                {{ icons.icon('discord') }} Try again
+            </a>
             {% if user %}
-            <a href="/logout" class="btn waves-effect my-button">Logout</a>
+            <a href="/logout" class="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm font-medium text-zinc-200 transition hover:bg-white/5">
+                {{ icons.icon('logout') }} Log out
+            </a>
             {% endif %}
         </div>
     </div>
-</div>
-
 </main>
 
 {% endblock %}

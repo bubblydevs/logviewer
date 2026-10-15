@@ -1,36 +1,36 @@
 {% extends "base.html" %}
+{% set hide_header_signin = true %}
+{% import '_icons.html' as icons %}
 {% block content %}
 
-<main>
+<main class="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-16">
+    <div class="pointer-events-none absolute inset-x-0 top-0 h-[480px] bg-[radial-gradient(ellipse_at_top,rgba(88,101,242,0.16),transparent_65%)]"></div>
 
-<div class="vertical-align-middle center container">
-    <div class="card-panel hoverable" id='main-card'>
-        {% if java_branding %}
-        <img src="{{ java_logo_url | e }}" alt="Java" class="animated jackInTheBox java-card-logo">
-        <h5 class="header col s12 light grey-text">Staff ticket logs. Everything here is confidential and must not be shared.</h5>
-        <br>
-        <div class="row center">
-            {% if auth_enabled and not user %}
-            <a href="/login" class="btn waves-effect my-button">Login with Discord</a>
+    <div class="relative w-full max-w-md">
+        <div class="rounded-2xl border border-white/5 bg-surface-900/80 p-8 text-center shadow-2xl shadow-black/40 backdrop-blur sm:p-10">
+            {% if java_branding %}
+            <img src="{{ java_logo_url | e }}" alt="Java" class="mx-auto h-10 w-auto">
+            <h1 class="mt-8 text-2xl font-semibold tracking-tight text-white">Staff transcripts</h1>
+            <p class="mt-2 text-sm leading-relaxed text-zinc-400">Ticket logs for the Java staff team. Sign in with your Discord account to continue.</p>
+            {% else %}
+            <span class="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-brand text-white shadow-lg shadow-brand/25">{{ icons.icon('message', 'h-6 w-6') }}</span>
+            <h1 class="mt-6 text-2xl font-semibold tracking-tight text-white">Logviewer</h1>
+            <p class="mt-2 text-sm leading-relaxed text-zinc-400">This site is used to display Modmail log entries.</p>
             {% endif %}
-            <a href="{{ java_policy_url | e }}" target="_blank" rel="noopener noreferrer" class="btn waves-effect my-button">Data protection policy</a>
-            <br>
-        </div>
-        {% else %}
-        <h1 class="animated jackInTheBox header" id='dashbots'>Logviewer</h1>
-        <h5 class="header col s12 light grey-text">This site is used to display Modmail log entries.</h5>
-        <br>
-        <div class="row center">
-            <a href="https://discord.gg/cnUpwrnpYb" class="btn waves-effect my-button">Discord</a>
-            <a href="https://github.com/modmail-dev/modmail" class="btn waves-effect my-button">Github</a>
-            <a href="https://docs.modmail.dev/" class="btn waves-effect my-button">Docs</a>
-            <a href="https://patreon.com/kyber" class="btn waves-effect my-button">Patreon</a>
-            <br>
-        </div>
-        {% endif %}
-    </div>
-</div>
 
+            {% if auth_enabled %}
+            <a href="/login" class="mt-8 flex w-full items-center justify-center gap-2.5 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-brand/25 transition hover:bg-brand-600">
+                {{ icons.icon('discord', 'h-5 w-5') }} Continue with Discord
+            </a>
+            <p class="mt-4 text-xs text-zinc-500">Only staff with ticket access can sign in.</p>
+            {% elif not java_branding %}
+            <div class="mt-8 flex justify-center gap-2">
+                <a href="https://github.com/modmail-dev/modmail" class="rounded-lg border border-white/10 px-3.5 py-2 text-sm font-medium text-zinc-200 transition hover:bg-white/5">GitHub</a>
+                <a href="https://docs.modmail.dev/" class="rounded-lg border border-white/10 px-3.5 py-2 text-sm font-medium text-zinc-200 transition hover:bg-white/5">Docs</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
 </main>
 
 {% endblock %}
