@@ -1,5 +1,6 @@
 __version__ = "1.1.2"
 
+import hashlib
 import html
 import os
 
@@ -91,7 +92,19 @@ def strtobool(val):
 
 
 JAVA_BRANDING = strtobool(os.getenv("JAVA_BRANDING", "no"))
+
+
+def file_version(path):
+    """Short hash of a static file, added to its URL so browsers drop cached copies when it changes."""
+    try:
+        with open(path, "rb") as f:
+            return hashlib.md5(f.read()).hexdigest()[:10]
+    except OSError:
+        return __version__
+
+
 jinja_env.globals.update(
+    css_version=file_version("static/css/tailwind.css"),
     java_branding=JAVA_BRANDING,
     java_logo_url=os.getenv(
         "JAVA_LOGO_URL",

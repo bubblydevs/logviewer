@@ -9,7 +9,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="/static/css/tailwind.css" rel="stylesheet">
+    <link href="/static/css/tailwind.css?v={{ css_version }}" rel="stylesheet">
+    {# Keeps the page readable if the stylesheet is missing or still loading. #}
+    <style>html, body { background-color: #0f0f11; color: #ffffff; }</style>
 </head>
 <body class="tw flex min-h-screen flex-col bg-page font-sans text-white {% if java_branding %}pb-16{% endif %}">
     {% include 'navbar.html' %}
