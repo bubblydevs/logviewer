@@ -3,10 +3,11 @@
 <header class="tw z-40 font-sans {% if has_hero %}absolute inset-x-0 top-0{% else %}sticky top-0 border-b border-line bg-page{% endif %}">
     <div class="mx-auto flex h-20 max-w-6xl items-center justify-between gap-4 px-6">
         <a href="/" class="flex items-center">
-            {% if java_branding %}
-            <img src="{{ java_logo_url | e }}" alt="Java" class="h-8 w-auto">
-            {% else %}
-            <span class="text-xl font-extrabold tracking-tight text-white">Logviewer</span>
+            {% if brand.logo_url %}
+            <img src="{{ brand.logo_url | e }}" alt="{{ brand.name | e }}" class="{{ brand.logo_class }}">
+            {% endif %}
+            {% if brand.logo_text %}
+            <span class="{% if brand.logo_url %}ml-1 text-base font-bold{% else %}text-xl font-extrabold tracking-tight{% endif %} text-white">{{ brand.logo_text | e }}</span>
             {% endif %}
         </a>
 
@@ -17,10 +18,10 @@
                     <img src="{{ user.avatar | e }}" alt="" class="h-7 w-7 rounded-full">
                     {{ (user.global_name or user.username) | e }}
                 </span>
-                <a href="/logout" class="rounded-full bg-white px-4 py-2 text-sm font-medium text-black transition hover:bg-white/90">Log out</a>
+                <a href="/logout" class="rounded-full px-4 py-2 text-sm font-medium transition {{ brand.button_class }}">Log out</a>
             </div>
             {% elif not hide_header_signin %}
-            <a href="/login" class="rounded-full bg-white px-4 py-2 text-sm font-medium text-black transition hover:bg-white/90">Sign in</a>
+            <a href="/login" class="rounded-full px-4 py-2 text-sm font-medium transition {{ brand.button_class }}">Sign in</a>
             {% endif %}
         {% endif %}
     </div>

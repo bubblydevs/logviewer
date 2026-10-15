@@ -12,7 +12,7 @@ from jinja2 import Environment, FileSystemLoader
 
 load_dotenv()
 
-from core import auth, dashboard
+from core import auth, branding, dashboard
 from core.models import LogEntry
 
 if "URL_PREFIX" in os.environ:
@@ -91,9 +91,6 @@ def strtobool(val):
         raise ValueError("invalid truth value %r" % (val,))
 
 
-JAVA_BRANDING = strtobool(os.getenv("JAVA_BRANDING", "no"))
-
-
 def file_version(path):
     """Short hash of a static file, added to its URL so browsers drop cached copies when it changes."""
     try:
@@ -105,19 +102,7 @@ def file_version(path):
 
 jinja_env.globals.update(
     css_version=file_version("static/css/tailwind.css"),
-    java_branding=JAVA_BRANDING,
-    java_logo_url=os.getenv(
-        "JAVA_LOGO_URL",
-        "https://payhip.com/cdn-cgi/image/format=auto,width=1500/https://pe56d.s3.amazonaws.com/o_1hkesjldmd5bk2917qcavsq0uu.png",
-    ),
-    java_hero_url=os.getenv(
-        "JAVA_HERO_URL",
-        "https://pe56d.s3.amazonaws.com/o_1k21acu1p9fsg7lmopmanhmu1o.png",
-    ),
-    java_policy_url=os.getenv(
-        "JAVA_POLICY_URL",
-        "https://docs.google.com/document/d/1BwLS66KzTESwoaGdqKYqJysGHHBW4-jqWvM3920O9yQ/edit?tab=t.0",
-    ),
+    brand=branding.load_brand(),
 )
 
 

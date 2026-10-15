@@ -2,18 +2,18 @@
 {% set has_hero = true %}
 {% import '_icons.html' as icons %}
 {% from '_hero.html' import hero %}
-{% block title %}Tickets · {% if java_branding %}Java Transcripts{% else %}Logviewer{% endif %}{% endblock %}
+{% block title %}Tickets · {{ brand.site_title | e }}{% endblock %}
 {% block content %}
 
 {% macro pill(href, active, label) -%}
-<a href="{{ href }}" class="rounded-full px-4 py-1.5 text-sm font-medium transition {% if active %}bg-white text-black{% else %}text-muted hover:text-white{% endif %}">{{ label }}</a>
+<a href="{{ href }}" class="rounded-full px-4 py-1.5 text-sm font-medium transition {% if active %}{{ brand.button_class }}{% else %}text-muted hover:text-white{% endif %}">{{ label }}</a>
 {%- endmacro %}
 
 {% set mine = filters.tab == 'mine' %}
 
 <main class="flex flex-1 flex-col">
     {% call hero('min-h-[400px]') %}
-        <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl">Welcome back, {{ (user.global_name or user.username) | e }}</h1>
+        <h1 class="text-4xl font-extrabold {{ brand.heading_class }} text-white sm:text-5xl">Welcome back, {{ (user.global_name or user.username) | e }}</h1>
         <p class="mx-auto mt-4 max-w-xl text-white/80">Search by username, Discord ID or the staff member who closed the ticket.</p>
 
         <form method="get" action="/" class="mx-auto mt-8 flex max-w-2xl gap-2">
@@ -22,7 +22,7 @@
             {% if mine %}<input type="hidden" name="tab" value="mine">{% endif %}
             {% if filters.status != 'all' %}<input type="hidden" name="status" value="{{ filters.status | e }}">{% endif %}
             {% if filters.server %}<input type="hidden" name="server" value="{{ filters.server | e }}">{% endif %}
-            <button type="submit" aria-label="Search" class="flex h-14 w-14 shrink-0 cursor-pointer items-center justify-center rounded-2xl bg-white text-black shadow-lg transition hover:bg-white/90">
+            <button type="submit" aria-label="Search" class="flex h-14 w-14 shrink-0 cursor-pointer items-center justify-center rounded-2xl shadow-lg transition {{ brand.button_class }}">
                 {{ icons.icon('search', 'h-5 w-5') }}
             </button>
         </form>
@@ -149,7 +149,7 @@
                 <a href="{{ link(page=filters.page - 1) }}" class="rounded-full border border-line bg-card px-4 py-2 text-sm font-medium transition hover:bg-raised">Newer</a>
                 {% endif %}
                 {% if has_next and filters.page < 40 %}
-                <a href="{{ link(page=filters.page + 1) }}" class="rounded-full bg-white px-4 py-2 text-sm font-medium text-black transition hover:bg-white/90">Older</a>
+                <a href="{{ link(page=filters.page + 1) }}" class="rounded-full px-4 py-2 text-sm font-medium transition {{ brand.button_class }}">Older</a>
                 {% endif %}
             </div>
         </div>

@@ -1,0 +1,28 @@
+{% if brand.notice %}
+<div class="tw fixed inset-x-0 bottom-0 z-40 border-t border-line bg-page/95 font-sans backdrop-blur">
+    <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3 text-xs sm:text-sm">
+        <p class="text-muted">
+            <span class="hidden sm:inline">{{ brand.notice | e }} </span>Do not share, copy or screenshot anything on this site.
+        </p>
+
+        <div class="flex shrink-0 items-center gap-5">
+            {% if brand.policy_url %}
+            <a href="{{ brand.policy_url | e }}" target="_blank" rel="noopener noreferrer"
+               class="font-medium text-white underline decoration-white/30 underline-offset-4 transition hover:decoration-white">
+                <span class="sm:hidden">{{ brand.policy_label_short | e }}</span><span class="hidden sm:inline">{{ brand.policy_label | e }}</span>
+            </a>
+            {% endif %}
+
+            {% if brand.credit %}
+            <a href="{{ brand.credit.url | e }}" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-2.5">
+                <span class="text-right leading-tight">
+                    <span class="block text-[11px] text-muted">Brought to you by</span>
+                    <span class="block font-semibold text-white group-hover:underline group-hover:underline-offset-4">{{ brand.credit.label | e }}</span>
+                </span>
+                <img src="{{ brand.logo_url | e }}" alt="" class="-mr-1.5 h-11 w-11">
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}

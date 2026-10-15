@@ -6,10 +6,10 @@
 
 <main class="flex flex-1 flex-col">
     {% call hero('min-h-screen') %}
-        <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl">Page not found</h1>
+        <h1 class="text-4xl font-extrabold {{ brand.heading_class }} text-white sm:text-5xl">Page not found</h1>
         <p class="mx-auto mt-4 max-w-xl text-white/80">This transcript doesn't exist, or the link is wrong.</p>
 
-        <a href="/" class="mt-8 inline-block rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:bg-white/90">Back to tickets</a>
+        <a href="/" class="mt-8 inline-block rounded-full px-5 py-2.5 text-sm font-medium transition {{ brand.button_class }}">Back to home</a>
     {% endcall %}
 </main>
 

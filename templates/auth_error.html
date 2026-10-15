@@ -7,11 +7,11 @@
 
 <main class="flex flex-1 flex-col">
     {% call hero('min-h-screen') %}
-        <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl">Access denied</h1>
+        <h1 class="text-4xl font-extrabold {{ brand.heading_class }} text-white sm:text-5xl">Access denied</h1>
         <p class="mx-auto mt-4 max-w-xl text-white/80">{{ message | e }}</p>
 
         <div class="mt-8 flex flex-wrap justify-center gap-2">
-            <a href="/login" class="rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:bg-white/90">Try again</a>
+            <a href="/login" class="rounded-full px-5 py-2.5 text-sm font-medium transition {{ brand.button_class }}">Try again</a>
             {% if user %}
             <a href="/logout" class="rounded-full bg-white/10 px-5 py-2.5 text-sm font-medium text-white backdrop-blur transition hover:bg-white/20">Log out</a>
             {% endif %}

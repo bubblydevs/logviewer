@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}{% if java_branding %}Java Transcripts{% else %}Logviewer{% endif %}{% endblock %}</title>
+    <title>{% block title %}{{ brand.site_title | e }}{% endblock %}</title>
     <meta name="theme-color" content="#0f0f11">
     <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,12 +13,12 @@
     {# Keeps the page readable if the stylesheet is missing or still loading. #}
     <style>html, body { background-color: #0f0f11; color: #ffffff; }</style>
 </head>
-<body class="tw flex min-h-screen flex-col bg-page font-sans text-white {% if java_branding %}pb-16{% endif %}">
+<body class="tw flex min-h-screen flex-col bg-page font-sans text-white {% if brand.notice %}pb-20{% endif %}">
     {% include 'navbar.html' %}
 
     {% block content %}{% endblock %}
 
-    {% include 'java_notice.html' %}
+    {% include 'notice.html' %}
 
     {% block scripts %}{% endblock %}
 </body>

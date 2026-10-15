@@ -7,22 +7,19 @@
 
 <main class="flex flex-1 flex-col">
     {% call hero('min-h-screen') %}
-        <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
-            {% if java_branding %}Staff transcripts{% else %}Logviewer{% endif %}
-        </h1>
-        <p class="mx-auto mt-4 max-w-xl text-white/80">
-            {% if java_branding %}
-            Every ticket transcript in one place. Sign in with your Discord account to see them.
-            {% else %}
-            This site is used to display Modmail log entries.
-            {% endif %}
-        </p>
+        <h1 class="text-4xl font-extrabold {{ brand.heading_class }} text-white sm:text-5xl">{{ brand.home_title | e }}</h1>
+        <p class="mx-auto mt-4 max-w-xl text-white/80">{{ brand.home_text | e }}</p>
 
         {% if auth_enabled %}
-        <a href="/login" class="mt-8 inline-flex h-12 items-center gap-2.5 rounded-full bg-white px-6 font-medium text-black shadow-lg transition hover:bg-white/90">
+        <a href="/login" class="mt-8 inline-flex h-12 items-center gap-2.5 rounded-full px-6 font-medium shadow-lg transition {{ brand.button_class }}">
             {{ icons.icon('discord', 'h-5 w-5') }} Continue with Discord
         </a>
         <p class="mt-4 text-sm text-white/60">Only staff with ticket access can sign in.</p>
+        {% elif brand.credit %}
+        <a href="{{ brand.credit.url | e }}" target="_blank" rel="noopener noreferrer"
+           class="mt-8 inline-flex h-12 items-center gap-2.5 rounded-full px-6 font-medium shadow-lg transition {{ brand.button_class }}">
+            {{ icons.icon('discord', 'h-5 w-5') }} Join our Discord
+        </a>
         {% endif %}
     {% endcall %}
 </main>

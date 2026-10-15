@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>{% if java_branding %}Java Log Entry{% else %}Log Entry{% endif %}</title>
+    <title>Log Entry · {{ brand.site_title | e }}</title>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width"/>
 
@@ -27,7 +27,7 @@
     <link href="/static/css/tailwind.css?v={{ css_version }}" rel="stylesheet">
 </head>
 
-<body{% if java_branding %} class="pb-16"{% endif %}>
+<body{% if brand.notice %} class="pb-20"{% endif %}>
 
         {% block navbar %}
 		
@@ -35,7 +35,7 @@
 
 		{% endblock %}
 
-        {% include 'java_notice.html' %}
+        {% include 'notice.html' %}
     
     
 <div class='entry'>

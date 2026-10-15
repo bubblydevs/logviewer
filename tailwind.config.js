@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./templates/**/*.html"],
+  content: ["./templates/**/*.html", "./core/branding.py"],
   corePlugins: {
     // The log page still uses Materialize, so Tailwind's global reset is replaced
     // by a scoped one in tailwind.src.css (applies inside .tw only).
