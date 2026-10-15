@@ -1,29 +1,22 @@
 {% extends "base.html" %}
-{% import '_icons.html' as icons %}
+{% set has_hero = true %}
+{% set hide_header_signin = true %}
+{% from '_hero.html' import hero %}
 {% block title %}Access denied{% endblock %}
 {% block content %}
 
-<main class="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-16">
-    <div class="pointer-events-none absolute inset-x-0 top-0 h-[480px] bg-[radial-gradient(ellipse_at_top,rgba(239,68,68,0.10),transparent_65%)]"></div>
+<main class="flex flex-1 flex-col">
+    {% call hero('min-h-screen') %}
+        <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl">Access denied</h1>
+        <p class="mx-auto mt-4 max-w-xl text-white/80">{{ message | e }}</p>
 
-    <div class="relative w-full max-w-md rounded-2xl border border-white/5 bg-surface-900/80 p-8 text-center shadow-2xl shadow-black/40 backdrop-blur sm:p-10">
-        <span class="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-red-500/10 text-red-400 ring-1 ring-inset ring-red-500/20">
-            {{ icons.icon('shield-alert', 'h-6 w-6') }}
-        </span>
-        <h1 class="mt-6 text-xl font-semibold tracking-tight text-white">Access denied</h1>
-        <p class="mt-2 text-sm leading-relaxed text-zinc-400">{{ message | e }}</p>
-
-        <div class="mt-8 flex flex-col gap-2 sm:flex-row sm:justify-center">
-            <a href="/login" class="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-600">
-                {{ icons.icon('discord') }} Try again
-            </a>
+        <div class="mt-8 flex flex-wrap justify-center gap-2">
+            <a href="/login" class="rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:bg-white/90">Try again</a>
             {% if user %}
-            <a href="/logout" class="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm font-medium text-zinc-200 transition hover:bg-white/5">
-                {{ icons.icon('logout') }} Log out
-            </a>
+            <a href="/logout" class="rounded-full bg-white/10 px-5 py-2.5 text-sm font-medium text-white backdrop-blur transition hover:bg-white/20">Log out</a>
             {% endif %}
         </div>
-    </div>
+    {% endcall %}
 </main>
 
 {% endblock %}

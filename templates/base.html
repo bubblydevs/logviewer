@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" class="bg-surface-950">
+<html lang="en" class="bg-page">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}{% if java_branding %}Java Transcripts{% else %}Logviewer{% endif %}{% endblock %}</title>
-    <meta name="theme-color" content="#0e0f11">
+    <meta name="theme-color" content="#0f0f11">
     <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="/static/css/tailwind.css" rel="stylesheet">
 </head>
-<body class="tw flex min-h-screen flex-col bg-surface-950 font-sans text-zinc-300 {% if java_branding %}pb-24 sm:pb-20{% endif %}">
+<body class="tw flex min-h-screen flex-col bg-page font-sans text-white {% if java_branding %}pb-16{% endif %}">
     {% include 'navbar.html' %}
 
     {% block content %}{% endblock %}

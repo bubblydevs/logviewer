@@ -1,36 +1,30 @@
 {% extends "base.html" %}
+{% set has_hero = true %}
 {% set hide_header_signin = true %}
 {% import '_icons.html' as icons %}
+{% from '_hero.html' import hero %}
 {% block content %}
 
-<main class="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-16">
-    <div class="pointer-events-none absolute inset-x-0 top-0 h-[480px] bg-[radial-gradient(ellipse_at_top,rgba(88,101,242,0.16),transparent_65%)]"></div>
-
-    <div class="relative w-full max-w-md">
-        <div class="rounded-2xl border border-white/5 bg-surface-900/80 p-8 text-center shadow-2xl shadow-black/40 backdrop-blur sm:p-10">
+<main class="flex flex-1 flex-col">
+    {% call hero('min-h-screen') %}
+        <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
+            {% if java_branding %}Staff transcripts{% else %}Logviewer{% endif %}
+        </h1>
+        <p class="mx-auto mt-4 max-w-xl text-white/80">
             {% if java_branding %}
-            <img src="{{ java_logo_url | e }}" alt="Java" class="mx-auto h-10 w-auto">
-            <h1 class="mt-8 text-2xl font-semibold tracking-tight text-white">Staff transcripts</h1>
-            <p class="mt-2 text-sm leading-relaxed text-zinc-400">Ticket logs for the Java staff team. Sign in with your Discord account to continue.</p>
+            Every ticket transcript in one place. Sign in with your Discord account to see them.
             {% else %}
-            <span class="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-brand text-white shadow-lg shadow-brand/25">{{ icons.icon('message', 'h-6 w-6') }}</span>
-            <h1 class="mt-6 text-2xl font-semibold tracking-tight text-white">Logviewer</h1>
-            <p class="mt-2 text-sm leading-relaxed text-zinc-400">This site is used to display Modmail log entries.</p>
+            This site is used to display Modmail log entries.
             {% endif %}
+        </p>
 
-            {% if auth_enabled %}
-            <a href="/login" class="mt-8 flex w-full items-center justify-center gap-2.5 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-brand/25 transition hover:bg-brand-600">
-                {{ icons.icon('discord', 'h-5 w-5') }} Continue with Discord
-            </a>
-            <p class="mt-4 text-xs text-zinc-500">Only staff with ticket access can sign in.</p>
-            {% elif not java_branding %}
-            <div class="mt-8 flex justify-center gap-2">
-                <a href="https://github.com/modmail-dev/modmail" class="rounded-lg border border-white/10 px-3.5 py-2 text-sm font-medium text-zinc-200 transition hover:bg-white/5">GitHub</a>
-                <a href="https://docs.modmail.dev/" class="rounded-lg border border-white/10 px-3.5 py-2 text-sm font-medium text-zinc-200 transition hover:bg-white/5">Docs</a>
-            </div>
-            {% endif %}
-        </div>
-    </div>
+        {% if auth_enabled %}
+        <a href="/login" class="mt-8 inline-flex h-12 items-center gap-2.5 rounded-full bg-white px-6 font-medium text-black shadow-lg transition hover:bg-white/90">
+            {{ icons.icon('discord', 'h-5 w-5') }} Continue with Discord
+        </a>
+        <p class="mt-4 text-sm text-white/60">Only staff with ticket access can sign in.</p>
+        {% endif %}
+    {% endcall %}
 </main>
 
 {% endblock %}

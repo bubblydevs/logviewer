@@ -14,6 +14,8 @@ PAGE_SIZE = int(os.getenv("DASHBOARD_PAGE_SIZE", "25"))
 MAX_PAGE = 40
 
 TABS = ("recent", "mine")
+# Modmail message types that are actual replies to the user (not internal notes or system messages).
+REPLY_TYPES = ["thread_message", "anonymous"]
 STATUSES = ("all", "open", "closed")
 
 
@@ -30,11 +32,10 @@ def build_match(tab, status, query, user_id):
 
     if tab == "mine":
         ids = {"$in": _id_values(user_id)}
-        # Any ticket the staff member closed, opened (contact command) or sent a message in.
+        # Tickets this staff member closed or replied to.
         conditions.append({"$or": [
             {"closer.id": ids},
-            {"creator.id": ids},
-            {"messages.author.id": ids},
+            {"messages": {"$elemMatch": {"author.id": ids, "type": {"$in": REPLY_TYPES}}}},
         ]})
 
     if status == "open":
@@ -56,7 +57,7 @@ def build_match(tab, status, query, user_id):
     return {"$and": conditions} if conditions else {}
 
 
-def _pipeline(match, limit):
+def _pipeline(match, limit, user_id):
     return [
         {"$match": match},
         {"$sort": {"created_at": -1}},
@@ -70,6 +71,13 @@ def _pipeline(match, limit):
             "closed_at": 1,
             "recipient": 1,
             "closer": 1,
+            "you_replied": {"$anyElementTrue": [{"$map": {
+                "input": {"$ifNull": ["$messages", []]},
+                "in": {"$and": [
+                    {"$in": ["$$this.author.id", _id_values(user_id)]},
+                    {"$in": ["$$this.type", REPLY_TYPES]},
+                ]},
+            }}]},
             "message_count": {"$size": {"$filter": {
                 "input": {"$ifNull": ["$messages", []]},
                 "cond": {"$not": [{"$in": ["$$this.type", ["internal", "system"]]}]},
@@ -113,6 +121,7 @@ def _to_ticket(doc, path, log_prefix, user_id):
         "recipient_default_avatar": _default_avatar(recipient),
         "closer_name": closer.get("name") if not doc.get("open") else None,
         "closer_is_you": not doc.get("open") and str(closer.get("id")) == str(user_id),
+        "you_replied": bool(doc.get("you_replied")),
         "message_count": doc.get("message_count", 0),
         "created": _ago(doc.get("created_at")),
         "closed": _ago(doc.get("closed_at")) if not doc.get("open") else None,
@@ -131,7 +140,7 @@ async def list_tickets(sources, log_prefix, user_id, tab, status, query, page):
 
     docs = []
     for path, db in sources:
-        cursor = db.logs.aggregate(_pipeline(match, limit), allowDiskUse=True)
+        cursor = db.logs.aggregate(_pipeline(match, limit, user_id), allowDiskUse=True)
         async for doc in cursor:
             docs.append((path, doc))
 

@@ -1,20 +1,12 @@
 {% if java_branding %}
-{% import '_icons.html' as icons %}
-<div class="tw fixed inset-x-0 bottom-0 z-40 border-t border-white/5 bg-surface-950/85 font-sans backdrop-blur-xl">
-    <div class="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:px-6">
-        <div class="flex min-w-0 items-center gap-3">
-            <span class="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-amber-400/10 text-amber-300 ring-1 ring-inset ring-amber-400/20">
-                {{ icons.icon('lock') }}
-            </span>
-            <p class="text-[13px] leading-snug text-zinc-400">
-                <span class="font-semibold text-zinc-100">Confidential.</span>
-                <span class="hidden sm:inline">Java follows data protection laws.</span>
-                Do not share, copy or screenshot anything<span class="hidden sm:inline"> on this site</span>.
-            </p>
-        </div>
+<div class="tw fixed inset-x-0 bottom-0 z-40 border-t border-line bg-page/95 font-sans backdrop-blur">
+    <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3 text-xs sm:text-sm">
+        <p class="text-muted">
+            <span class="hidden sm:inline">Java follows data protection laws. </span>Do not share, copy or screenshot anything on this site.
+        </p>
         <a href="{{ java_policy_url | e }}" target="_blank" rel="noopener noreferrer"
-           class="inline-flex shrink-0 items-center gap-1.5 ml-auto rounded-lg border border-white/10 px-3 py-1.5 text-xs font-medium text-zinc-200 transition hover:border-white/20 hover:bg-white/5">
-            <span class="sm:hidden">Code of Conduct</span><span class="hidden sm:inline">Java Staff Code of Conduct</span> {{ icons.icon('external', 'h-3.5 w-3.5') }}
+           class="shrink-0 font-medium text-white underline decoration-white/30 underline-offset-4 transition hover:decoration-white">
+            <span class="sm:hidden">Code of Conduct</span><span class="hidden sm:inline">Java Staff Code of Conduct</span>
         </a>
     </div>
 </div>

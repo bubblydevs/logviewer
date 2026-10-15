@@ -97,6 +97,10 @@ jinja_env.globals.update(
         "JAVA_LOGO_URL",
         "https://payhip.com/cdn-cgi/image/format=auto,width=1500/https://pe56d.s3.amazonaws.com/o_1hkesjldmd5bk2917qcavsq0uu.png",
     ),
+    java_hero_url=os.getenv(
+        "JAVA_HERO_URL",
+        "https://pe56d.s3.amazonaws.com/o_1k21acu1p9fsg7lmopmanhmu1o.png",
+    ),
     java_policy_url=os.getenv(
         "JAVA_POLICY_URL",
         "https://docs.google.com/document/d/1BwLS66KzTESwoaGdqKYqJysGHHBW4-jqWvM3920O9yQ/edit?tab=t.0",

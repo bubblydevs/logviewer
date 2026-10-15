@@ -1,32 +1,26 @@
 {% import '_icons.html' as icons %}
-<header class="tw sticky top-0 z-40 border-b border-white/5 bg-surface-950/80 font-sans backdrop-blur-xl">
-    <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <a href="/" class="flex min-w-0 items-center gap-3">
+{# Pages with a hero image set has_hero, so the header sits on top of the photo. #}
+<header class="tw z-40 font-sans {% if has_hero %}absolute inset-x-0 top-0{% else %}sticky top-0 border-b border-line bg-page{% endif %}">
+    <div class="mx-auto flex h-20 max-w-6xl items-center justify-between gap-4 px-6">
+        <a href="/" class="flex items-center">
             {% if java_branding %}
-            <img src="{{ java_logo_url | e }}" alt="Java" class="h-6 w-auto sm:h-7">
-            <span class="hidden h-5 w-px bg-white/10 sm:block"></span>
-            <span class="hidden text-sm font-medium text-zinc-400 sm:block">Transcripts</span>
+            <img src="{{ java_logo_url | e }}" alt="Java" class="h-8 w-auto">
             {% else %}
-            <span class="grid h-8 w-8 place-items-center rounded-lg bg-brand text-white">{{ icons.icon('message') }}</span>
-            <span class="text-[15px] font-semibold text-white">Logviewer</span>
+            <span class="text-xl font-extrabold tracking-tight text-white">Logviewer</span>
             {% endif %}
         </a>
 
         {% if auth_enabled %}
             {% if user %}
-            <div class="flex items-center gap-1.5">
-                <div class="flex items-center gap-2.5 rounded-full border border-white/5 bg-white/[0.03] py-1 pl-1 pr-3.5">
-                    <img src="{{ user.avatar | e }}" alt="" class="h-7 w-7 rounded-full bg-surface-700">
-                    <span class="max-w-[9rem] truncate text-sm font-medium text-zinc-200">{{ (user.global_name or user.username) | e }}</span>
-                </div>
-                <a href="/logout" title="Log out" class="grid h-9 w-9 place-items-center rounded-lg text-zinc-400 transition hover:bg-white/5 hover:text-white">
-                    {{ icons.icon('logout', 'h-[18px] w-[18px]') }}
-                </a>
+            <div class="flex items-center gap-2">
+                <span class="hidden items-center gap-2 rounded-full bg-white/10 py-1 pl-1 pr-4 text-sm font-medium text-white backdrop-blur sm:flex">
+                    <img src="{{ user.avatar | e }}" alt="" class="h-7 w-7 rounded-full">
+                    {{ (user.global_name or user.username) | e }}
+                </span>
+                <a href="/logout" class="rounded-full bg-white px-4 py-2 text-sm font-medium text-black transition hover:bg-white/90">Log out</a>
             </div>
             {% elif not hide_header_signin %}
-            <a href="/login" class="inline-flex items-center gap-2 rounded-lg bg-brand px-3.5 py-2 text-sm font-semibold text-white shadow-lg shadow-brand/20 transition hover:bg-brand-600">
-                {{ icons.icon('discord') }} Sign in
-            </a>
+            <a href="/login" class="rounded-full bg-white px-4 py-2 text-sm font-medium text-black transition hover:bg-white/90">Sign in</a>
             {% endif %}
         {% endif %}
     </div>

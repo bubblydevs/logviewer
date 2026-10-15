@@ -8,21 +8,16 @@ module.exports = {
   },
   theme: {
     extend: {
+      // Matches help.shopjava.uk (dark theme).
       colors: {
-        brand: {
-          DEFAULT: "#5865F2",
-          600: "#4752C4",
-        },
-        surface: {
-          950: "#0e0f11",
-          900: "#16171a",
-          800: "#1e1f22",
-          700: "#2b2d31",
-          600: "#3a3c42",
-        },
+        page: "#0f0f11",
+        card: "#17171a",
+        raised: "#1f1f23",
+        line: "#2a2a2e",
+        muted: "#a1a1aa",
       },
       fontFamily: {
-        sans: ["Inter", "ui-sans-serif", "system-ui", "-apple-system", "Segoe UI", "Roboto", "sans-serif"],
+        sans: ["Poppins", "ui-sans-serif", "system-ui", "-apple-system", "Segoe UI", "Roboto", "sans-serif"],
       },
     },
   },

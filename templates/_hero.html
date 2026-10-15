@@ -1,0 +1,11 @@
+{# Photo banner in the style of help.shopjava.uk. Usage: {% call hero('min-h-[400px]') %}...{% endcall %} #}
+{% macro hero(height="min-h-[420px]") -%}
+<section class="relative flex {{ height }} items-center justify-center bg-cover bg-center"
+         {% if java_branding %}style="background-image: url('{{ java_hero_url | e }}')"{% endif %}>
+    <div class="absolute inset-0 {% if java_branding %}bg-black/55{% else %}bg-raised{% endif %}"></div>
+    <div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-page"></div>
+    <div class="relative mx-auto w-full max-w-3xl px-6 pb-8 pt-28 text-center">
+        {{ caller() }}
+    </div>
+</section>
+{%- endmacro %}

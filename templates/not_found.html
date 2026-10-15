@@ -1,23 +1,16 @@
 {% extends "base.html" %}
-{% import '_icons.html' as icons %}
+{% set has_hero = true %}
+{% from '_hero.html' import hero %}
 {% block title %}Not found{% endblock %}
 {% block content %}
 
-<main class="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-16">
-    <div class="pointer-events-none absolute inset-x-0 top-0 h-[480px] bg-[radial-gradient(ellipse_at_top,rgba(88,101,242,0.12),transparent_65%)]"></div>
+<main class="flex flex-1 flex-col">
+    {% call hero('min-h-screen') %}
+        <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl">Page not found</h1>
+        <p class="mx-auto mt-4 max-w-xl text-white/80">This transcript doesn't exist, or the link is wrong.</p>
 
-    <div class="relative w-full max-w-md rounded-2xl border border-white/5 bg-surface-900/80 p-8 text-center shadow-2xl shadow-black/40 backdrop-blur sm:p-10">
-        <span class="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-white/5 text-zinc-300 ring-1 ring-inset ring-white/10">
-            {{ icons.icon('search-x', 'h-6 w-6') }}
-        </span>
-        <p class="mt-6 text-xs font-semibold uppercase tracking-widest text-brand">404</p>
-        <h1 class="mt-1 text-xl font-semibold tracking-tight text-white">Page not found</h1>
-        <p class="mt-2 text-sm leading-relaxed text-zinc-400">This transcript doesn't exist or the link is wrong.</p>
-
-        <a href="/" class="mt-8 inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm font-medium text-zinc-200 transition hover:bg-white/5">
-            {{ icons.icon('arrow-left') }} Back home
-        </a>
-    </div>
+        <a href="/" class="mt-8 inline-block rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:bg-white/90">Back to tickets</a>
+    {% endcall %}
 </main>
 
 {% endblock %}
