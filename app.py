@@ -11,7 +11,7 @@ from jinja2 import Environment, FileSystemLoader
 
 load_dotenv()
 
-from core import auth
+from core import auth, dashboard
 from core.models import LogEntry
 
 if "URL_PREFIX" in os.environ:
@@ -111,9 +111,10 @@ async def get_db(app, log_path=None):
     If using legacy mode, always return the default database.
     """
     if DATABASE_MAPPING and log_path in DATABASE_MAPPING:
-        # Return the client for this specific database mapping
-        uri = DATABASE_MAPPING[log_path]
-        return AsyncIOMotorClient(uri).modmail_bot
+        # Reuse one client per mapped database instead of connecting on every request
+        if log_path not in app.ctx.mapped_dbs:
+            app.ctx.mapped_dbs[log_path] = AsyncIOMotorClient(DATABASE_MAPPING[log_path]).modmail_bot
+        return app.ctx.mapped_dbs[log_path]
     elif not DATABASE_MAPPING and MONGO_URI:
         # Legacy single database mode
         return app.ctx.db
@@ -127,8 +128,9 @@ async def init(app, loop):
     if not DATABASE_MAPPING and MONGO_URI:
         app.ctx.db = AsyncIOMotorClient(MONGO_URI).modmail_bot
     else:
-        # In mapping mode, don't pre-create connections (they'll be created per-request)
+        # In mapping mode, connections are created lazily by get_db
         app.ctx.db = None
+    app.ctx.mapped_dbs = {}
     
     use_attachment_proxy = strtobool(os.getenv("USE_ATTACHMENT_PROXY", "no"))
     if use_attachment_proxy:
@@ -144,7 +146,31 @@ async def not_found(request, exc):
 
 @app.get("/")
 async def index(request):
-    return render_template("index")
+    user = getattr(request.ctx, "user", None)
+    if not (auth.AUTH_ENABLED and user):
+        return render_template("index")
+
+    server_paths = list(DATABASE_MAPPING)
+    filters = dashboard.parse_args(request.args, server_paths)
+
+    if DATABASE_MAPPING:
+        paths = [filters["server"]] if filters["server"] else server_paths
+        sources = [(path, await get_db(app, log_path=path)) for path in paths]
+    else:
+        sources = [(None, await get_db(app))]
+
+    tickets, has_next = await dashboard.list_tickets(
+        sources, prefix, user["id"], filters["tab"], filters["status"], filters["q"], filters["page"]
+    )
+
+    return render_template(
+        "dashboard",
+        tickets=tickets,
+        has_next=has_next,
+        filters=filters,
+        server_paths=server_paths,
+        link=lambda **changes: dashboard.link(filters, **changes),
+    )
 
 
 @app.get(prefix + "/raw/<key>")

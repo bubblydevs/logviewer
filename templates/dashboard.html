@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block content %}
+
+<main class="container dash">
+
+    <div class="dash__header">
+        {% if java_branding %}
+        <img src="{{ java_logo_url | e }}" alt="Java" class="dash__logo">
+        {% endif %}
+        <div>
+            <h4 class="dash__title">Tickets</h4>
+            <div class="dash__subtitle">Logged in as {{ (user.global_name or user.username) | e }}</div>
+        </div>
+    </div>
+
+    <div class="dash__tabs">
+        <a href="{{ link(tab='recent') }}" class="dash__tab {% if filters.tab == 'recent' %}dash__tab--active{% endif %}">
+            <i class="material-icons">schedule</i> Recent tickets
+        </a>
+        <a href="{{ link(tab='mine') }}" class="dash__tab {% if filters.tab == 'mine' %}dash__tab--active{% endif %}">
+            <i class="material-icons">person</i> Done by you
+        </a>
+    </div>
+
+    <div class="dash__toolbar">
+        <form method="get" action="/" class="dash__search">
+            <i class="material-icons">search</i>
+            <input type="search" name="q" value="{{ filters.q | e }}" placeholder="Search by user, user ID, closer or log key" autocomplete="off">
+            {% if filters.tab != 'recent' %}<input type="hidden" name="tab" value="{{ filters.tab | e }}">{% endif %}
+            {% if filters.status != 'all' %}<input type="hidden" name="status" value="{{ filters.status | e }}">{% endif %}
+            {% if filters.server %}<input type="hidden" name="server" value="{{ filters.server | e }}">{% endif %}
+        </form>
+
+        <div class="dash__chips">
+            {% for value, label in [('all', 'All'), ('open', 'Open'), ('closed', 'Closed')] %}
+            <a href="{{ link(status=value) }}" class="dash__chip {% if filters.status == value %}dash__chip--active{% endif %}">{{ label }}</a>
+            {% endfor %}
+        </div>
+
+        {% if server_paths %}
+        <div class="dash__chips">
+            <a href="{{ link(server=None) }}" class="dash__chip {% if not filters.server %}dash__chip--active{% endif %}">All servers</a>
+            {% for path in server_paths %}
+            <a href="{{ link(server=path) }}" class="dash__chip {% if filters.server == path %}dash__chip--active{% endif %}">{{ path | e }}</a>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    {% if tickets %}
+    <div class="dash__list">
+        {% for ticket in tickets %}
+        <a href="{{ ticket.url | e }}" class="ticket">
+            <img class="ticket__avatar circle"
+                 src="{{ ticket.recipient_avatar | e }}"
+                 onerror="this.onerror=null;this.src='{{ ticket.recipient_default_avatar | e }}'"
+                 alt="">
+            <div class="ticket__main">
+                <div class="ticket__name">
+                    {{ ticket.recipient_name | e }}
+                    {% if ticket.title %}<span class="ticket__title">{{ ticket.title | e }}</span>{% endif %}
+                </div>
+                <div class="ticket__meta">
+                    {% if ticket.created %}<span title="{{ ticket.created.exact }}">Opened {{ ticket.created.human }}</span>{% endif %}
+                    {% if ticket.closer_name %}<span>&middot; Closed by {{ ticket.closer_name | e }}</span>{% endif %}
+                    <span>&middot; {{ ticket.message_count }} message{% if ticket.message_count != 1 %}s{% endif %}</span>
+                </div>
+            </div>
+            <div class="ticket__side">
+                {% if ticket.path %}<span class="ticket__badge">{{ ticket.path | e }}</span>{% endif %}
+                <span class="ticket__status {% if ticket.open %}ticket__status--open{% endif %}">{% if ticket.open %}Open{% else %}Closed{% endif %}</span>
+                <i class="material-icons ticket__arrow">chevron_right</i>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+
+    <div class="dash__pager">
+        {% if filters.page > 1 %}
+        <a href="{{ link(page=filters.page - 1) }}" class="btn waves-effect">Newer</a>
+        {% endif %}
+        <span class="dash__page">Page {{ filters.page }}</span>
+        {% if has_next and filters.page < 40 %}
+        <a href="{{ link(page=filters.page + 1) }}" class="btn waves-effect">Older</a>
+        {% endif %}
+    </div>
+    {% else %}
+    <div class="dash__empty">
+        <i class="material-icons">inbox</i>
+        {% if filters.tab == 'mine' and not filters.q and filters.status == 'all' %}
+        <p>You haven't replied to or closed any tickets yet.</p>
+        {% else %}
+        <p>No tickets match these filters.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</main>
+
+{% endblock %}

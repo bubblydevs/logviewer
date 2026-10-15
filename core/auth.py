@@ -157,7 +157,10 @@ def is_protected(path, log_prefix):
 async def auth_middleware(request, log_prefix):
     session = decode_session(request.cookies.get(SESSION_COOKIE))
 
-    if session and is_protected(request.path, log_prefix) and session["checked"] + STAFF_RECHECK_SECONDS < time.time():
+    # The home page lists tickets for logged in staff, so it gets re-checked too.
+    shows_tickets = request.path == "/" or is_protected(request.path, log_prefix)
+
+    if session and shows_tickets and session["checked"] + STAFF_RECHECK_SECONDS < time.time():
         # Re-check periodically so removed staff lose access without waiting for the session to expire.
         try:
             still_staff = await is_staff(session["id"])
