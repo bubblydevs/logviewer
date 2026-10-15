@@ -5,6 +5,9 @@
 
 <div class="vertical-align-middle center container">
     <div class="card-panel hoverable" id='main-card'>
+        {% if java_branding %}
+        <img src="{{ java_logo_url | e }}" alt="Java" class="java-card-logo java-card-logo--small">
+        {% endif %}
         <h1 class="animated jackInTheBox header" id='dashbots'>Not found</h1>
         <h5 class="header col s12 light grey-text">The page you are looking for is not here.</h5>
         <br>

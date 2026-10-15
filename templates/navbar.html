@@ -2,8 +2,27 @@
     <nav class="lighten-1">
         <div class="nav-wrapper container">
             <a id="logo-container" href="/" class="brand-logo">
+                {% if java_branding %}
+                <img src="{{ java_logo_url | e }}" alt="Java" class="java-nav-logo">
+                {% else %}
                 <i class="material-icons" id='dash'>home</i>
+                {% endif %}
             </a>
+            {% if auth_enabled %}
+            <ul class="right">
+                {% if user %}
+                <li>
+                    <span class="nav-user">
+                        <img src="{{ user.avatar | e }}" alt="" class="circle nav-avatar">
+                        {{ (user.global_name or user.username) | e }}
+                    </span>
+                </li>
+                <li><a href="/logout">Logout</a></li>
+                {% else %}
+                <li><a href="/login">Login with Discord</a></li>
+                {% endif %}
+            </ul>
+            {% endif %}
         </div>
     </nav>
 </div>

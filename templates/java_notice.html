@@ -1,0 +1,11 @@
+{% if java_branding %}
+<div class="java-watermark" style="background-image: url('{{ java_logo_url | e }}')" aria-hidden="true"></div>
+<div class="java-notice">
+    <img src="{{ java_logo_url | e }}" alt="Java" class="java-notice__logo">
+    <span class="java-notice__text">
+        <i class="material-icons java-notice__icon">lock</i>
+        Java follows data protection laws. Everything here is confidential, do not share, copy or screenshot any of it.
+    </span>
+    <a href="{{ java_policy_url | e }}" target="_blank" rel="noopener noreferrer" class="java-notice__link">Data protection policy</a>
+</div>
+{% endif %}

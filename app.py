@@ -9,9 +9,10 @@ from sanic import Sanic, response
 from sanic.exceptions import NotFound
 from jinja2 import Environment, FileSystemLoader
 
-from core.models import LogEntry
-
 load_dotenv()
+
+from core import auth
+from core.models import LogEntry
 
 if "URL_PREFIX" in os.environ:
     print("Using the legacy config var `URL_PREFIX`, rename it to `LOG_URL_PREFIX`")
@@ -51,10 +52,23 @@ jinja_env = Environment(loader=FileSystemLoader("templates"))
 
 def render_template(name, *args, **kwargs):
     template = jinja_env.get_template(name + ".html")
+    kwargs.setdefault("auth_enabled", auth.AUTH_ENABLED)
+    kwargs.setdefault("user", auth.current_user.get())
     return response.html(template.render(*args, **kwargs))
 
 
 app.ctx.render_template = render_template
+
+if auth.AUTH_ENABLED:
+    app.blueprint(auth.bp)
+
+    @app.on_request
+    async def require_login(request):
+        return await auth.auth_middleware(request, prefix)
+
+    @app.on_response
+    async def refresh_session(request, resp):
+        await auth.refresh_session_middleware(request, resp)
 
 
 def strtobool(val):
@@ -74,6 +88,20 @@ def strtobool(val):
         return 0
     else:
         raise ValueError("invalid truth value %r" % (val,))
+
+
+JAVA_BRANDING = strtobool(os.getenv("JAVA_BRANDING", "no"))
+jinja_env.globals.update(
+    java_branding=JAVA_BRANDING,
+    java_logo_url=os.getenv(
+        "JAVA_LOGO_URL",
+        "https://payhip.com/cdn-cgi/image/format=auto,width=1500/https://pe56d.s3.amazonaws.com/o_1hkesjldmd5bk2917qcavsq0uu.png",
+    ),
+    java_policy_url=os.getenv(
+        "JAVA_POLICY_URL",
+        "https://docs.google.com/document/d/1BwLS66KzTESwoaGdqKYqJysGHHBW4-jqWvM3920O9yQ/edit?tab=t.0",
+    ),
+)
 
 
 async def get_db(app, log_path=None):

@@ -95,3 +95,87 @@ nav {
 .icon-block .material-icons {
 	font-size: inherit;
 }
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 15px;
+}
+
+.nav-avatar {
+  width: 32px;
+  height: 32px;
+}
+
+/* Java branding (JAVA_BRANDING=yes) */
+.java-nav-logo {
+  height: 32px;
+  vertical-align: middle;
+}
+
+.java-card-logo {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  margin: 10px auto 20px;
+}
+
+.java-card-logo--small {
+  max-width: 220px;
+  margin-bottom: 0;
+}
+
+.java-watermark {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: min(70vw, 900px) auto;
+  opacity: 0.04;
+}
+
+.java-notice {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 900;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 16px;
+  padding: 10px 16px;
+  background-color: #283f57;
+  border-top: 2px solid #7289DA;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  text-align: center;
+}
+
+.java-notice__logo {
+  height: 20px;
+}
+
+.java-notice__text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.java-notice__icon {
+  font-size: 18px;
+}
+
+.java-notice__link {
+  color: #ffffff;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* Keep the end of the page clear of the notice bar. */
+body.java {
+  padding-bottom: 90px;
+}

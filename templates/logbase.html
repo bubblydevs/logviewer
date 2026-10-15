@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Log Entry</title>
+    <title>{% if java_branding %}Java Log Entry{% else %}Log Entry{% endif %}</title>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width"/>
 
@@ -25,13 +25,15 @@
     <link href="https://fonts.googleapis.com/css?family=Bowlby+One+SC" rel="stylesheet">
 </head>
 
-<body>
+<body{% if java_branding %} class="java"{% endif %}>
 
         {% block navbar %}
 		
 		{% include 'navbar.html' %}
 
 		{% endblock %}
+
+        {% include 'java_notice.html' %}
     
     
 <div class='entry'>

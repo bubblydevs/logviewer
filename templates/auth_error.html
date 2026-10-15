@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+
+<main>
+
+<div class="vertical-align-middle center container">
+    <div class="card-panel hoverable" id='main-card'>
+        {% if java_branding %}
+        <img src="{{ java_logo_url | e }}" alt="Java" class="java-card-logo java-card-logo--small">
+        {% endif %}
+        <h1 class="animated jackInTheBox header" id='dashbots'>Access denied</h1>
+        <h5 class="header col s12 light grey-text">{{ message | e }}</h5>
+        <br>
+        <div class="row center">
+            <a href="/login" class="btn waves-effect my-button">Try again</a>
+            {% if user %}
+            <a href="/logout" class="btn waves-effect my-button">Logout</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+</main>
+
+{% endblock %}

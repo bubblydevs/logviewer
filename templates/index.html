@@ -5,6 +5,18 @@
 
 <div class="vertical-align-middle center container">
     <div class="card-panel hoverable" id='main-card'>
+        {% if java_branding %}
+        <img src="{{ java_logo_url | e }}" alt="Java" class="animated jackInTheBox java-card-logo">
+        <h5 class="header col s12 light grey-text">Staff ticket logs. Everything here is confidential and must not be shared.</h5>
+        <br>
+        <div class="row center">
+            {% if auth_enabled and not user %}
+            <a href="/login" class="btn waves-effect my-button">Login with Discord</a>
+            {% endif %}
+            <a href="{{ java_policy_url | e }}" target="_blank" rel="noopener noreferrer" class="btn waves-effect my-button">Data protection policy</a>
+            <br>
+        </div>
+        {% else %}
         <h1 class="animated jackInTheBox header" id='dashbots'>Logviewer</h1>
         <h5 class="header col s12 light grey-text">This site is used to display Modmail log entries.</h5>
         <br>
@@ -15,6 +27,7 @@
             <a href="https://patreon.com/kyber" class="btn waves-effect my-button">Patreon</a>
             <br>
         </div>
+        {% endif %}
     </div>
 </div>
 
